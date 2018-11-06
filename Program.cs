@@ -88,9 +88,28 @@ namespace WinePairLambda
                     if (request == null)
                         Console.WriteLine("Null request sent to matching service");
 
-                    var match = _winePair.FindMatchingWine(request);
+                    var matches = _winePair.FindBestMatchingWines(request);
+                    IWine match1, match2 = match1 = null;
+                    if(matches.Count >= 2)
+                    {
+                        match1 = matches[0];
+                        match2 = matches[1];
+                    }
+                    else if(matches.Count == 1)
+                    {
+                        match1 = matches[0];
+                    }
 
-                    string response = String.Format("You should try a {0} wine like {1}", match.Style.ToString(), match.Name);
+                    if (match1 == null && match2 == null)
+                        throw new Exception("Could not find matching wine.");
+
+
+
+                    string response;
+                    if (match1 != null && match2 != null)
+                        response = string.Format("You should try a {0} wine like {1} or a {2} wine like {3}", match1.Style.ToString(), match1.Name, match2.Style.ToString(), match2.Name);
+                    else
+                        response = string.Format("You should try a {0} wine like {1}", match1.Style.ToString(), match1.Name);
 
                     return ResponseBuilder.Tell(response);
                 }

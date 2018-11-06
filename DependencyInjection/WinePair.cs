@@ -49,7 +49,16 @@ namespace WinePairLambda.DependencyInjection
                 new Sherry(),
             };
         }
+        List<IWine> IWinePairService.FindBestMatchingWines(IFood food)
+        {
+            if (food == null)
+                return null;
 
+            List<IWine> bestMatch = new List<IWine>();
+            FillWineLists(food, bestMatch, null);
+
+            return bestMatch;
+        }
         List<IWine> IWinePairService.FindAllMatchingWines(IFood food)
         {
             if (food == null)
@@ -57,26 +66,29 @@ namespace WinePairLambda.DependencyInjection
 
             List<IWine> bestMatch = new List<IWine>();
             List<IWine> okMatch = new List<IWine>();
+            FillWineLists(food, bestMatch, okMatch);
+
+            bestMatch.AddRange(okMatch);
+
+            return bestMatch;
+        }
+
+        void FillWineLists(IFood food, List<IWine> bestMatch, List<IWine> okMatch)
+        {
+
             foreach (var wine in _allWine)
             {
                 foreach (var match in wine.FoodScores)
                 {
                     if (match.Item1.Name == food.Name)
                     {
-                        if (match.Item2 == 2)
+                        if (match.Item2 == 2 && bestMatch != null)
                             bestMatch.Add(wine);
-                        else if (match.Item2 == 1)
+                        else if (match.Item2 == 1 && okMatch != null)
                             okMatch.Add(wine);
                     }
                 }
             }
-
-            bestMatch.AddRange(okMatch);
-
-            return bestMatch;
-
-
-
         }
 
         IWine IWinePairService.FindMatchingWine(IFood food)
