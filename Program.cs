@@ -43,18 +43,18 @@ namespace WinePairLambda
                         intentValue.Contains("steak") ||
                         intentValue.Contains("lamb") ||
                         intentValue.Contains("goat") ||
-                        intentValue.Contains("veal")
+                        intentValue.Contains("veal"))
                     {
                         request = new RedMeat();
                     }
                     else if (intentValue.Contains("cured") ||
                              intentValue.Contains("bacon") ||
-                             intentValue.Contains("salami")
+                             intentValue.Contains("salami"))
                     {
                         request = new CuredMeat();
                     }
                     else if (intentValue.Contains("pork") ||
-                             intentValue.Contains("ham")
+                             intentValue.Contains("ham"))
                     {
                         request = new Pork();
                     }
@@ -79,7 +79,7 @@ namespace WinePairLambda
                     else if (intentValue.Contains("shellfish") ||
                              intentValue.Contains("shrimp") ||
                              intentValue.Contains("lobster") ||
-                             intentValue.Contains(("crab"))
+                             intentValue.Contains("crab"))
                     {
                         request = new Shellfish();
                     }
