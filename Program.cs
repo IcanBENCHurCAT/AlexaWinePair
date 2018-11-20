@@ -7,6 +7,7 @@ using WinePairLambda.Core.Models;
 using WinePairLambda.Core.Models.Foods;
 using WinePairLambda.DependencyInjection;
 using Alexa.NET;
+using WinePairLambda.Core.Models.Wines;
 
 namespace WinePairLambda
 {
@@ -29,92 +30,164 @@ namespace WinePairLambda
                 {
                     IFood request = null;
                     var intentReq = input.Request as IntentRequest;
-                    if (intentReq.Intent.Name == "AMAZON.HelpIntent" || intentReq.Intent.Slots.ContainsKey("meat") == false)
+                    if (intentReq.Intent.Name == "AMAZON.HelpIntent")
                     {
                         return ResponseBuilder.Ask("Try asking for a meat to pair.", new Reprompt("Would you like to pair a meat?"));
                     }
 
+
+                    if (intentReq.Intent.Name == "FindMatchingFood")
+                    {
+                        string intentValue = intentReq.Intent.Slots["meat"].Value;
+                        if (intentValue.Contains("beef") ||
+                            intentValue.Contains("steak") ||
+                            intentValue.Contains("lamb") ||
+                            intentValue.Contains("goat") ||
+                            intentValue.Contains("veal"))
+                        {
+                            request = new RedMeat();
+                        }
+                        else if (intentValue.Contains("cured") ||
+                                 intentValue.Contains("bacon") ||
+                                 intentValue.Contains("salami"))
+                        {
+                            request = new CuredMeat();
+                        }
+                        else if (intentValue.Contains("pork") ||
+                                 intentValue.Contains("ham"))
+                        {
+                            request = new Pork();
+                        }
+                        else if (intentValue.Contains("chicken") ||
+                                 intentValue.Contains("poultry") ||
+                                 intentValue.Contains("light meat") ||
+                                 intentValue.Contains("dark meat") ||
+                                 intentValue.Contains("duck") ||
+                                 intentValue.Contains("turkey") ||
+                                 intentValue.Contains("goose"))
+                        {
+                            request = new Poultry();
+                        }
+                        else if (intentValue.Contains("mollusk") ||
+                                 intentValue.Contains("clam") ||
+                                 intentValue.Contains("oyster") ||
+                                 intentValue.Contains("mussel") ||
+                                 intentValue.Contains("scallop"))
+                        {
+                            request = new Mollusk();
+                        }
+                        else if (intentValue.Contains("shellfish") ||
+                                 intentValue.Contains("shrimp") ||
+                                 intentValue.Contains("lobster") ||
+                                 intentValue.Contains("crab"))
+                        {
+                            request = new Shellfish();
+                        }
+                        else if (intentValue.Contains("fish") ||
+                                 intentValue.Contains("seafood") ||
+                                 intentValue.Contains("salmon"))
+                        {
+                            request = new Fish();
+                        }
+
+
+                        if (request == null)
+                            Console.WriteLine("Null request sent to matching service with intentValue: " + intentValue);
+
+                        var matches = _winePair.FindBestMatchingWines(request);
+                        IWine match1, match2 = match1 = null;
+                        if (matches.Count >= 2)
+                        {
+                            match1 = matches[0];
+                            match2 = matches[1];
+                        }
+                        else if (matches.Count == 1)
+                        {
+                            match1 = matches[0];
+                        }
+
+                        if (match1 == null && match2 == null)
+                            throw new Exception("Could not find matching wine.");
+
+
+
+                        string response;
+                        if (match1 != null && match2 != null)
+                            response = string.Format("You should try a {0} wine like {1} or a {2} wine like {3}", match1.Style.ToString(), match1.Name, match2.Style.ToString(), match2.Name);
+                        else
+                            response = string.Format("You should try a {0} wine like {1}", match1.Style.ToString(), match1.Name);
+
+                        return ResponseBuilder.Tell(response);
+                    }
+                    else if (intentReq.Intent.Name == "FindMatchingWine")
+                    {
+                        string intentValue = intentReq.Intent.Slots["style"].Value;
+                        IWine match;
+                        if (intentValue.Contains("bold red"))
+                        {
+                            match = new Malbec();
+                        }
+                        else if (intentValue.Contains("dessert"))
+                        {
+                            match = new Port();
+                        }
+                        else if (intentValue.Contains("light red"))
+                        {
+                            match = new PinotNoir();
+                        }
+                        else if (intentValue.Contains("light white"))
+                        {
+                            match = new SavBlanc();
+                        }
+                        else if (intentValue.Contains("medium red"))
+                        {
+                            match = new Merlot();
+                        }
+                        else if (intentValue.Contains("rich white"))
+                        {
+                            match = new Chardonnay();
+                        }
+                        else if (intentValue.Contains("rose"))
+                        {
+                            match = new WhiteZin();
+                        }
+                        else if (intentValue.Contains("sparkling"))
+                        {
+                            match = new Champagne();
+                        }
+                        else if (intentValue.Contains("sweet white"))
+                        {
+                            match = new Moscato();
+                        }
+                        else
+                            match = new PinotGris();
+
+                        var matches = _winePair.FindBestMatchingFoods(match);
+                        IFood match1, match2 = match1 = null;
+                        if (matches.Count >= 2)
+                        {
+                            match1 = matches[0];
+                            match2 = matches[1];
+                        }
+                        else if (matches.Count == 1)
+                        {
+                            match1 = matches[0];
+                        }
+
+                        if (match1 == null && match2 == null)
+                            throw new Exception("Could not find matching wine.");
+
+
+
+                        string response;
+                        if (match1 != null && match2 != null)
+                            response = string.Format("You should try a {0} like {1} or a {2} like {3}", match1.Style.ToString(), match1.Name, match2.Style.ToString(), match2.Name);
+                        else
+                            response = string.Format("You should try a {0} like {1}", match1.Style.ToString(), match1.Name);
+
+                        return ResponseBuilder.Tell(response);
+                    }
                     
-                    string intentValue = intentReq.Intent.Slots["meat"].Value;
-                    if (intentValue.Contains("beef") ||
-                        intentValue.Contains("steak") ||
-                        intentValue.Contains("lamb") ||
-                        intentValue.Contains("goat") ||
-                        intentValue.Contains("veal"))
-                    {
-                        request = new RedMeat();
-                    }
-                    else if (intentValue.Contains("cured") ||
-                             intentValue.Contains("bacon") ||
-                             intentValue.Contains("salami"))
-                    {
-                        request = new CuredMeat();
-                    }
-                    else if (intentValue.Contains("pork") ||
-                             intentValue.Contains("ham"))
-                    {
-                        request = new Pork();
-                    }
-                    else if (intentValue.Contains("chicken") ||
-                             intentValue.Contains("poultry") ||
-                             intentValue.Contains("light meat") ||
-                             intentValue.Contains("dark meat") ||
-                             intentValue.Contains("duck") ||
-                             intentValue.Contains("turkey") ||
-                             intentValue.Contains("goose"))
-                    {
-                        request = new Poultry();
-                    }
-                    else if (intentValue.Contains("mollusk") ||
-                             intentValue.Contains("clam") ||
-                             intentValue.Contains("oyster") ||
-                             intentValue.Contains("mussel") ||
-                             intentValue.Contains("scallop"))
-                    {
-                        request = new Mollusk();
-                    }
-                    else if (intentValue.Contains("shellfish") ||
-                             intentValue.Contains("shrimp") ||
-                             intentValue.Contains("lobster") ||
-                             intentValue.Contains("crab"))
-                    {
-                        request = new Shellfish();
-                    }
-                    else if (intentValue.Contains("fish") ||
-                             intentValue.Contains("seafood") ||
-                             intentValue.Contains("salmon"))
-                    {
-                        request = new Fish();
-                    }
-                    
-
-                    if (request == null)
-                        Console.WriteLine("Null request sent to matching service with intentValue: " + intentValue);
-
-                    var matches = _winePair.FindBestMatchingWines(request);
-                    IWine match1, match2 = match1 = null;
-                    if(matches.Count >= 2)
-                    {
-                        match1 = matches[0];
-                        match2 = matches[1];
-                    }
-                    else if(matches.Count == 1)
-                    {
-                        match1 = matches[0];
-                    }
-
-                    if (match1 == null && match2 == null)
-                        throw new Exception("Could not find matching wine.");
-
-
-
-                    string response;
-                    if (match1 != null && match2 != null)
-                        response = string.Format("You should try a {0} wine like {1} or a {2} wine like {3}", match1.Style.ToString(), match1.Name, match2.Style.ToString(), match2.Name);
-                    else
-                        response = string.Format("You should try a {0} wine like {1}", match1.Style.ToString(), match1.Name);
-
-                    return ResponseBuilder.Tell(response);
                 }
                 else if (requestType == typeof(LaunchRequest))
                 {
@@ -129,7 +202,7 @@ namespace WinePairLambda
                 Console.WriteLine(e);
             }
 
-            return ResponseBuilder.Ask("What would you like to pair?", new Reprompt("What would you like to pair?"));
+            return ResponseBuilder.Ask("Try asking for a meat to pair.", new Reprompt("Would you like to pair a meat?"));
         }
     }
 }

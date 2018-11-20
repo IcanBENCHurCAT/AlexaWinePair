@@ -9,5 +9,8 @@ namespace WinePairLambda.DependencyInjection
 
         List<IWine> FindAllMatchingWines(IFood food);
         List<IWine> FindBestMatchingWines(IFood food);
+
+        List<IFood> FindAllMatchingFoods(IWine wine);
+        List<IFood> FindBestMatchingFoods(IWine wine);
     }
 }

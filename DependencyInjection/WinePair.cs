@@ -113,5 +113,30 @@ namespace WinePairLambda.DependencyInjection
 
             return _allWine[_rand.Next(0, _allWine.Count - 1)];
         }
+
+        public List<IFood> FindAllMatchingFoods(IWine wine)
+        {
+            List<IFood> ret = new List<IFood>();
+            foreach(var f in wine.FoodScores)
+            {
+                ret.Add(f.Item1);
+            }
+
+            return ret;
+        }
+
+        public List<IFood> FindBestMatchingFoods(IWine wine)
+        {
+            List<IFood> ret = new List<IFood>();
+            foreach (var f in wine.FoodScores)
+            {
+                if (f.Item2 == 2)
+                    ret.Add(f.Item1);
+            }
+            if (ret.Count == 0)
+                ret.Add(wine.FoodScores[0].Item1);
+
+            return ret;
+        }
     }
 }
