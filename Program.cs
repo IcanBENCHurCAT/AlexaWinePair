@@ -29,16 +29,13 @@ namespace WinePairLambda
                 {
                     IFood request = null;
                     var intentReq = input.Request as IntentRequest;
-                    if (intentReq.Intent.Name == "AMAZON.HelpIntent")
+                    if (intentReq.Intent.Name == "AMAZON.HelpIntent" || intentReq.Intent.Slots.ContainsKey("meat") == false)
                     {
                         return ResponseBuilder.Ask("Try asking for a meat to pair.", new Reprompt("Would you like to pair a meat?"));
                     }
 
-                    if (intentReq.DialogState == "")
-                    {
-
-                    }
-                        string intentValue = intentReq.Intent.Slots["meat"].Value;
+                    
+                    string intentValue = intentReq.Intent.Slots["meat"].Value;
                     if (intentValue.Contains("beef") ||
                         intentValue.Contains("steak") ||
                         intentValue.Contains("lamb") ||
