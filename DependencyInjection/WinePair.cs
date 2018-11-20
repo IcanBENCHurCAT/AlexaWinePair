@@ -51,10 +51,13 @@ namespace WinePairLambda.DependencyInjection
         }
         List<IWine> IWinePairService.FindBestMatchingWines(IFood food)
         {
-            if (food == null)
-                return null;
 
             List<IWine> bestMatch = new List<IWine>();
+            if(food == null)
+            {
+                food = new Poultry();
+                Console.WriteLine("Defaulting to Chicken");
+            }
             FillWineLists(food, bestMatch, null);
 
             return bestMatch;

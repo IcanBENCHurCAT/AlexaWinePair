@@ -31,62 +31,68 @@ namespace WinePairLambda
                     var intentReq = input.Request as IntentRequest;
                     if (intentReq.Intent.Name == "AMAZON.HelpIntent")
                     {
-                        return ResponseBuilder.Ask("Try asking for a meat to pair. Would you like to pair a wine with meat?", new Reprompt("Would you like to hear a joke?"));
+                        return ResponseBuilder.Ask("Try asking for a meat to pair.", new Reprompt("Would you like to pair a meat?"));
                     }
-                    string intentValue = intentReq.Intent.Slots["meat"].Value;
-                    if (intentValue == "beef" ||
-                        intentValue == "steak" ||
-                        intentValue == "lamb" ||
-                        intentValue == "goat" ||
-                        intentValue == "veal")
+
+                    if (intentReq.DialogState == "")
+                    {
+
+                    }
+                        string intentValue = intentReq.Intent.Slots["meat"].Value;
+                    if (intentValue.Contains("beef") ||
+                        intentValue.Contains("steak") ||
+                        intentValue.Contains("lamb") ||
+                        intentValue.Contains("goat") ||
+                        intentValue.Contains("veal")
                     {
                         request = new RedMeat();
                     }
-                    else if (intentValue == "cured meat" ||
-                             intentValue == "bacon" ||
-                             intentValue == "salami")
+                    else if (intentValue.Contains("cured") ||
+                             intentValue.Contains("bacon") ||
+                             intentValue.Contains("salami")
                     {
                         request = new CuredMeat();
                     }
-                    else if (intentValue == "pork" ||
-                             intentValue == "ham")
+                    else if (intentValue.Contains("pork") ||
+                             intentValue.Contains("ham")
                     {
                         request = new Pork();
                     }
-                    else if (intentValue == "chicken" ||
-                             intentValue == "poultry" ||
-                             intentValue == "light meat" ||
-                             intentValue == "dark meat" ||
-                             intentValue == "duck" ||
-                             intentValue == "turkey" ||
-                             intentValue == "goose")
+                    else if (intentValue.Contains("chicken") ||
+                             intentValue.Contains("poultry") ||
+                             intentValue.Contains("light meat") ||
+                             intentValue.Contains("dark meat") ||
+                             intentValue.Contains("duck") ||
+                             intentValue.Contains("turkey") ||
+                             intentValue.Contains("goose"))
                     {
                         request = new Poultry();
                     }
-                    else if (intentValue == "mollusk" ||
-                             intentValue == "clams" ||
-                             intentValue == "oysters" ||
-                             intentValue == "mussels" ||
-                             intentValue == "scallops")
+                    else if (intentValue.Contains("mollusk") ||
+                             intentValue.Contains("clam") ||
+                             intentValue.Contains("oyster") ||
+                             intentValue.Contains("mussel") ||
+                             intentValue.Contains("scallop"))
                     {
                         request = new Mollusk();
                     }
-                    else if (intentValue == "fish" ||
-                             intentValue == "seafood" ||
-                             intentValue == "salmon")
-                    {
-                        request = new Fish();
-                    }
-                    else if (intentValue == "shellfish" ||
-                             intentValue == "shrimp" ||
-                             intentValue == "lobster" ||
-                             intentValue == "crab")
+                    else if (intentValue.Contains("shellfish") ||
+                             intentValue.Contains("shrimp") ||
+                             intentValue.Contains("lobster") ||
+                             intentValue.Contains(("crab"))
                     {
                         request = new Shellfish();
                     }
+                    else if (intentValue.Contains("fish") ||
+                             intentValue.Contains("seafood") ||
+                             intentValue.Contains("salmon"))
+                    {
+                        request = new Fish();
+                    }
+                    
 
                     if (request == null)
-                        Console.WriteLine("Null request sent to matching service");
+                        Console.WriteLine("Null request sent to matching service with intentValue: " + intentValue);
 
                     var matches = _winePair.FindBestMatchingWines(request);
                     IWine match1, match2 = match1 = null;
@@ -118,17 +124,6 @@ namespace WinePairLambda
                     var response = ResponseBuilder.Ask("What can I pair for you?", new Reprompt("Would you like to pair a wine?"));
                     response.Response.ShouldEndSession = false;
                     return response;
-                }
-                else if (requestType == typeof(AudioPlayerRequest))
-                {
-                    var audioRequest = input.Request as AudioPlayerRequest;
-
-                    // these are events sent when the audio state has changed on the device
-                    // determine what exactly happened
-                    if (audioRequest.AudioRequestType == AudioRequestType.PlaybackNearlyFinished)
-                    {
-                        // queue up another audio file
-                    }
                 }
             }
             catch (Exception e)
